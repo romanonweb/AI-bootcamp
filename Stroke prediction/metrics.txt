@@ -1,0 +1,73 @@
+CLASSIFICATION METRICS CHEAT SHEET
+
+THE CONFUSION MATRIX
+This is the foundation everything else is built from. It compares y_test, the true answers, against y_pred, the model's guesses.
+
+                    Predicted No         Predicted Yes
+Actually No         True Negative        False Positive
+Actually Yes        False Negative       True Positive
+
+True Negative means the model correctly said no when the answer was actually no.
+False Positive means the model said yes when the answer was actually no.
+False Negative means the model said no when the answer was actually yes.
+True Positive means the model correctly said yes when the answer was actually yes.
+
+ACCURACY
+Tells you, overall, how often the model was right.
+
+Accuracy = (TP + TN) / (TP + TN + FP + FN)
+
+Using the stroke model numbers, where TP = 40, TN = 715, FP = 257, and FN = 10:
+Accuracy = (40 + 715) / (40 + 715 + 257 + 10) = 755 / 1022 = 0.74 (74 percent)
+
+This metric can be misleading when the data is imbalanced, because a model that always predicts the majority class can still score high without actually being useful.
+
+RECALL (also called Sensitivity)
+Tells you, of everyone who actually has the condition, how many the model managed to catch.
+
+Recall = TP / (TP + FN)
+
+Using the numbers: Recall = 40 / (40 + 10) = 40 / 50 = 0.80 (80 percent)
+
+PRECISION
+Tells you, of everyone the model flagged as positive, how many were actually correct.
+
+Precision = TP / (TP + FP)
+
+Using the numbers: Precision = 40 / (40 + 257) = 40 / 297 = 0.13 (13 percent)
+
+F1 SCORE
+A single number that balances precision and recall together. It drops low if either precision or recall is low, even if the other one is high.
+
+F1 = 2 x (Precision x Recall) / (Precision + Recall)
+
+Using the numbers: F1 = 2 x (0.13 x 0.80) / (0.13 + 0.80) = 0.208 / 0.93 = about 0.22 to 0.23
+
+SUPPORT
+Simply a count of how many real examples of that class exist in the test set. Not calculated from a formula, just a raw count.
+In this case, 972 people actually had no stroke, and 50 people actually had a stroke.
+
+MACRO AVERAGE
+Takes the simple average of a metric across both classes, treating each class equally regardless of size.
+
+Macro avg = (Metric_class0 + Metric_class1) / 2
+
+For precision: Macro avg = (0.99 + 0.13) / 2 = about 0.56
+
+WEIGHTED AVERAGE
+Also averages across classes, but multiplies each class's metric by how many examples that class has, then divides by the total number of examples.
+
+Weighted avg = (Metric_class0 x Support_class0 + Metric_class1 x Support_class1) / Total
+
+For precision: Weighted avg = (0.99 x 972 + 0.13 x 50) / 1022 = about 0.94
+
+ROC AUC
+Works differently from the others because it uses the raw probability scores from the model, not the final yes or no prediction. It checks, across every possible pairing of one actual positive person and one actual negative person, how often the positive person receives a higher risk score than the negative person.
+
+ROC AUC = (Number of correctly ordered positive negative pairs) / (Total number of positive negative pairs)
+
+Example: with 2 actual positive people and 2 actual negative people, there are 2 x 2 = 4 total pairs. If 3 of those 4 pairs have the positive person scoring higher, then ROC AUC = 3 / 4 = 0.75.
+A score of 0.5 means the model is no better than random guessing. A score of 1.0 means perfect ranking. This metric does not depend on any specific decision cutoff like 0.5.
+
+NOTES FOR THE STROKE PREDICTION PROJECT
+Recall and ROC AUC matter most here because catching real stroke cases is the priority. Accuracy is misleading because only about five percent of the dataset actually had a stroke. Low precision, meaning a lot of false alarms, is an acceptable tradeoff for a medical screening tool, since missing a real stroke case is far worse than raising a false alarm.
